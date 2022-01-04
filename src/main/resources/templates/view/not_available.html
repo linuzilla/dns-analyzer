@@ -1,0 +1,27 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div th:replace="query/query"></div>
+
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron">
+                <h3 class="display-4">Not Available!</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

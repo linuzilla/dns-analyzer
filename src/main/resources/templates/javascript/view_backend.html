@@ -1,0 +1,49 @@
+<script type="text/javascript">
+    /*<![CDATA[*/
+
+    function NcuViewBackend() {
+    }
+
+    NcuViewBackend.prototype.browse = function(pageNo, callback) {
+        ncuCommonLib.get('view/backend/browse/' + pageNo, callback);
+    }
+
+    NcuViewBackend.prototype.find_severity = function(callback) {
+        ncuCommonLib.get('view/backend/severity', callback);
+    };
+
+    NcuViewBackend.prototype.find_ipv6 = function(callback) {
+        ncuCommonLib.get('view/backend/ipv6', callback);
+    };
+
+    NcuViewBackend.prototype.find_dnssec = function(callback) {
+        ncuCommonLib.get('view/backend/dnssec', callback);
+    };
+
+    NcuViewBackend.prototype.find_edns = function(callback) {
+        ncuCommonLib.get('view/backend/edns', callback);
+    };
+
+    NcuViewBackend.prototype.find_rrset = function(callback) {
+        ncuCommonLib.get('view/backend/rrset', callback);
+    };
+
+    NcuViewBackend.prototype.find_problems = function(callback) {
+        ncuCommonLib.get('view/backend/problems', callback);
+    };
+
+    NcuViewBackend.prototype.find_servers = function(callback) {
+        ncuCommonLib.get('view/backend/servers', callback);
+    };
+
+    NcuViewBackend.prototype.find_axfr = function(callback) {
+        ncuCommonLib.get('view/backend/axfr', callback);
+    };
+
+    NcuViewBackend.prototype.find_recursive = function(callback) {
+        ncuCommonLib.get('view/backend/recursive', callback);
+    };
+
+
+    /*]]>*/
+</script>

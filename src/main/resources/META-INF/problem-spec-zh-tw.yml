@@ -1,0 +1,142 @@
+#
+#   severity: { normal, info, low, medium, high, urgent }
+#
+---
+name: Problems and recommendation
+problems:
+  PARENT_ZONE_NOT_EXISTS:
+    severity: urgent
+    problem: 網域 "{zone}" 不存在
+    recommendation: 可能是名稱錯誤，或尚未在上層註冊網域名稱。
+
+  ZONE_NOT_EXISTS:
+    severity: urgent
+    problem: 網域 "{zone}" 不存在
+    recommendation: 可能是名稱錯誤，或尚未在上層註冊網域名稱。
+
+  CHILDREN_DEFINED_NO_NS_RRSET:
+    severity: high
+    problem: Child DNS 沒有定義自己是 "{zone}"　網域的 DNS 伺服器。
+    recommendation: 雖然在上層有定義 NS Record, 但在下層仍需定義。
+
+  CHILDREN_RR_RECORD_DISAGREEMENTS:
+    severity: high
+    problem: 網域 "{zone}" Child DNS 之間的 NS RRset 不一致
+    recommendation: Child DNS 之間應該是同步一台 Master Server, 設法讓同步正常運作。或者移除有問題的
+      Slave Server。DNS 之間 out of sync 可能造成查詢到 outdated 的資料。
+
+  CHILD_HAS_MORE_RR_THAN_PARENT:
+    severity: info
+    problem: 網域 "{zone}" Children DNS 定義的 DNS 伺服器比 Parent DNS 更多
+    recommendation: 建議兩者是一致的。
+
+  PARENT_HAS_MORE_RR_THAN_CHILD:
+    severity: low
+    problem: 網域 "{zone}" Parent DNS 定義的 DNS 伺服器比 Children DNS 更多
+    recommendation: 建議兩者是一致的。
+
+  NAME_SERVER_NOT_RESPONDING:
+    severity: high
+    problem: Name server "{domain} ({addr})" 沒有回應 DNS 的請求, 錯誤："{error}"
+    recommendation: 有可能是 DNS 伺服器當機，或不正確的防火牆設定。Authority 的 DNS Server
+      必需開放 Internet 上對自己網域的名稱解析。不正常回應有可能倒致自己的 Web 網站無法提供訪問，或 Email
+      無法寄達。
+
+      建議將有問題的伺服器恢復服務，或無法恢復同時還有其它的伺服器可以回應的話，可以考慮暫時由名稱伺服器清單移除。
+
+  NAME_SERVER_NOT_WORKING_PROPERLY:
+    severity: high
+    problem: Name server "{domain} ({addr})" 回覆異常, 錯誤："{error}"
+    recommendation: 名稱伺服器應該能回應 SOA 的資訊，此伺服器不能正確回答可能是錯誤的設定，或者是伺服器本身不是貴機構的名稱伺服器。
+
+      應重新檢查該伺服器的設定，或者將此不適合的伺服器移出名稱伺服器清單。
+
+  NAME_SERVER_ADDRESS_NOT_FOUND:
+    severity: high
+    problem: Name server "{domain}" 無法解析, 錯誤："{error}"
+    recommendation: 設定錯誤。
+
+      應重新檢查該該名稱是否忘記註冊，或者將此不適合的名稱移出名稱伺服器清單。
+
+  NO_WORKING_NAME_SERVER:
+    severity: urgent
+    problem: 網域 "{zone}" 所有的名稱伺服器都無法正常工作
+    recommendation: 趕快搶救
+
+  NO_WORKING_IPV4_NAME_SERVER:
+    severity: urgent
+    problem: 網域 "{zone}" 缺少可以回覆 IPv4 DNS Query 的伺服器
+    recommendation: 目前 IPv6 的普及度仍然不足，缺少 IPv4 的 DNS Server 會造成名稱無法解析的問題
+
+  NO_WORKING_IPV6_NAME_SERVER:
+    severity: low
+    problem: 網域 "{zone}" 缺少可以回覆 IPv6 DNS Query 的伺服器
+    recommendation: 可能造成部份僅有 IPv6 的用戶無法訪問
+
+  ONLY_ONE_NAME_SERVER_IN_CONFIGURATION:
+    severity: medium
+    problem: 網域 "{zone}" 僅有一台名稱伺服器 "{domain} ({addr})"
+    recommendation: 為避免單點故障，最好能有兩台或兩台以上的名稱伺服器
+
+  ONLY_ONE_NAME_SERVER_IN_PARENT:
+    severity: medium
+    problem: 網域 "{zone}" 在上層僅定議一台名稱伺服器 "{domain} ({addr})"
+    recommendation: 建議把 Children 增加的名稱伺服器加到上層的定義，以達到真正的備援。
+
+  SOA_DIFFERENT_BETWEEN_SERVERS:
+    severity: low
+    problem: 網域 "{zone}" 的 SOA 記錄在各 Name Server 之間不一致
+    recommendation: 很可能是 Server 之間沒有正常同步，沒有正常同步會造成在查詢時得到錯誤的舊資料。另外，這也有可能是系統偵測時間的巧合造成的誤判，在重新測試即可解決。
+
+  ALLOW_OPEN_RECURSIVE:
+    severity: high
+    problem: 網域 "{zone}" 中，名稱伺服器 "{domain} ({addr})" 開放 Internet Recursive 查詢
+    recommendation: 不需要開放自己網域以外的地方做 Recursive 查詢，
+      容易遭到 DDoS 的攻擊或 DNS Amplification 攻擊。
+
+      建議調整設定，將 Recursive 限定在自己的網域或關閉。
+
+  ALLOW_OPEN_ZONE_TRANSFER:
+    severity: high
+    problem: 網域 "{zone}" 中，名稱伺服器 "{domain} ({addr})" 開放 Internet Zone Transfer
+    recommendation: Zone Transfer 將暴露自己的網路拓樸，容易遭到 Zone Transfer Attack。
+
+      建議關閉 Slave Server 以外的 Zone Transfer。
+
+  EDNS_COMPLIANCE_ERROR:
+    severity: medium
+    problem: 網域 "{zone}" 中的 "{domain} ({addr})" 伺服器不符合 EDNS Compliance
+    recommendation: 可能是因為 DNS 伺服器的版本過舊, 或者阻當 TCP port 53，或者 DNS 防護的防火牆太舊。
+      建議檢查環境設定，或更新 DNS 伺服器軟體。
+
+      關於 EDNS Compliance 的測試，參見 https://ednscomp.isc.org/ednscomp
+
+  EDNS_COMPLIANCE_WARNING:
+    severity: low
+    problem: 網域 "{zone}" 中的 "{domain} ({addr})" EDNS Compliance 測試時，有異常旗標回傳
+    recommendation: 可能是因為 DNS 伺服器的版本過舊，或設定問題。
+      建議更新 DNS 伺服器軟體，或調校設定。
+
+      關於 EDNS Compliance 的測試，參見 https://ednscomp.isc.org/ednscomp
+
+  DNS_COOKIE_NOT_SUPPORT:
+    severity: info
+    problem: 網域 "{zone}" 中的 "{domain} ({addr})" 不支援 DNS Cookie
+    recommendation: 可能是因為 DNS 伺服器的版本過舊。
+      建議更新 DNS 伺服器軟體。
+
+      DNS Cookie is a lighweight DNS transaction security mechanism that protects DNS sesrvers and DNS
+      clients from a variety of attacks like Dos attacks, DNS Amplification attacks, DNS Cache Poisoning etc.
+      It is a lightweight mechanism and can work with other existing DNS transaction security mechanisms.
+      It can even work in the presence of NAT and NAT - Protocol Transaction (NAT-PT).
+
+  DNS_SUBNET_NOT_SUPPORT:
+    severity: info
+    problem: 網域 "{zone}" 中的 "{domain} ({addr})" 不支援 DNS Subnet
+    recommendation: 可能是因為 DNS 伺服器的版本過舊。
+      建議更新 DNS 伺服器軟體。
+
+  DNSSEC_NOT_ENABLE:
+    severity: info
+    problem: 網域 "{zone}" 尚未啟動 DNSSEC 或 DNSSEC 無法驗證
+    recommendation: 現階段，DNSSEC 沒有啟動並無影響。

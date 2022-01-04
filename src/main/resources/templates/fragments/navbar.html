@@ -1,0 +1,71 @@
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+</head>
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a href="../" class="navbar-brand">Bootswatch</a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul class="nav navbar-nav">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes">Themes <span class="caret"></span></a>
+                    <ul class="dropdown-menu" aria-labelledby="themes">
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+
+<div th:fragment="navbar" class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a th:href="@{/}" class="navbar-brand" th:text="#{application.name}"></a>
+            <button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse collapse" id="navbar-main">
+            <ul id="main-menu" class="nav navbar-nav">
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <li class="dropdown">
+                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="download"><i class="fas fa-cog"></i><span class="caret"></span></a>
+                    <ul class="dropdown-menu" aria-labelledby="download">
+                        <li><a th:href="@{/lang?lang=zh_TW}"><i class="fas fa-language"></i> &nbsp; 中文版</a></li>
+                        <li><a th:href="@{/lang?lang=en_US}"><i class="fas fa-language"></i> &nbsp; English</a></li>
+                        <th:block sec:authorize="hasRole('DEVELOPER')" >
+                            <li class="divider"></li>
+                            <li><a th:href="@{/repos/browser}" target="_blank"><i class="fab fa-safari"></i> &nbsp; HAL Browser</a></li>
+                            <li class="divider"></li>
+                            <li><a th:href="@{/devel/role-manipulate}"><i class="fas fa-user-plus"></i> &nbsp; Manipulate Role</a></li>
+                            <li><a th:href="@{/devel/threads}"><i class="fas fa-user-plus"></i> &nbsp; Threads</a></li>
+                        </th:block>
+                        <li class="divider"></li>
+                        <li><a th:href="@{/about}"><i class="fas fa-info-circle"></i> &nbsp; <span th:text="#{menu.about}"></span></a></li>
+                        <li class="divider"></li>
+                        <li sec:authorize="! isAuthenticated()"><a th:href="@{/login}"><i class="fas fa-sign-in-alt"></i> &nbsp; <span th:text="#{menu.login}"></span></a></li>
+                        <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}"><i class="fas fa-sign-out-alt"></i> &nbsp; <span th:text="#{menu.logout}"></span> ( <span sec:authentication="name"></span> )</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <div th:replace="javascript/zone_backend"></div>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div id="processing" class="well bs-component">
+                <img th:src="@{/resources/images/gears.gif}" />
+            </div>
+            <div id="report" style="display: none" class="well bs-component">
+                <table class="table table-hover ">
+                    <thead>
+                    </thead>
+                    <tbody>
+                    <th:block th:if="${country}">
+                        <th:block th:switch="${university == null}">
+                            <th:block th:case="true">
+                                <tr><th>Country</th><td th:utext="${country}"></td></tr>
+                            </th:block>
+                            <th:block th:case="*">
+                                <tr>
+                                    <th>Country</th>
+                                    <td><a th:href="@{/statistics/univ/{country}(country=${code})}" th:utext="${country}"></a>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th>University</th>
+                                    <th th:utext="${university}"></th>
+                                </tr>
+                            </th:block>
+                        </th:block>
+                    </th:block>
+                    <tr>
+                        <th>Zone</th><th th:text="${zone}"></th>
+                    </tr>
+                    <tr>
+                        <th>Checking at</th><td><span id="checking-time"></span> &nbsp &nbsp;
+                        <a th:href="@{/query/reload/{zoneId}(zoneId=${zone})}"><i class="fas fa-sync"></i></a></td>
+                    </tr>
+                    <tr>
+                        <th>Severity</th><th><b id="severity-level"></b></th>
+                    </tr>
+                    <tr><th rowspan="2">SOA</th><td>Email: <i id="soa-email"></i></td></tr>
+                    <tr><td>Serial No: <i id="soa-serialno"></i></td></tr>
+                    </tbody>
+                </table>
+                <table class="table table-hover table-striped">
+                    <thead>
+                    <tr class="active">
+                        <th>Server</th>
+                        <th>Address</th>
+                        <th>Respond</th>
+                        <th>EDNS</th>
+                        <th>AXFR</th>
+                        <th>R</th>
+                    </tr>
+                    </thead>
+                    <tbody id="name-servers">
+                    </tbody>
+                </table>
+                <table id="having-problem" style="display: none" class="table table-hover table-striped">
+                    <thead>
+                    <tr class="danger">
+                        <th>Severity</th>
+                        <th>Cause and Recommendation</th>
+                    </tr>
+                    </thead>
+                    <tbody id="cause-and-recommendation">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+<script th:inline="javascript" type="text/javascript">
+    /*<![CDATA[*/
+    $(document).ready(function() {
+        var zoneBackendLib = new ZoneBackendLib();
+
+        var clazzmap = {
+            0: 'success',
+            1: 'success',
+            2: 'info',
+            3: 'warning',
+            4: 'danger',
+            5: 'danger',
+            6: 'danger'
+        };
+
+        function show_name_servers(servers, clazz) {
+            var htmlList = [];
+
+            for (var i = 0; i < servers.length; i++) {
+                htmlList.push('<tr class="' + clazz + '"><td>' + servers[i].name + '</td>');
+                htmlList.push('<td>' + servers[i].address + '</td></td><td>');
+                htmlList.push(servers[i].responding == null ? '?' : servers[i].responding ? '<font color="green">V</font>' : '<font color="red">X</font>');
+                htmlList.push('</td><td>');
+                htmlList.push(servers[i].edns == null ? '?' : servers[i].edns.success ? '<font color="green">V</font>' : '<font color="red">X</font>');
+                htmlList.push('</td><td>');
+                htmlList.push(servers[i].allowTransfer ? '<font color="red">X</font>' : '<font color="green">-</font>');
+                htmlList.push('</td><td>');
+                htmlList.push(servers[i].allowRecursive ? '<font color="red">X</font>' : '<font color="green">-</font>');
+                htmlList.push('</td></tr>');
+            }
+            return htmlList.join('')
+        }
+
+        function eachProblem(data) {
+            var severityLevel = zoneBackendLib.severity(data.severity);
+            var clazz = clazzmap[data.severity]
+            var htmlList = [];
+
+            var span = data.additional == null ? 2 : 3;
+
+            htmlList.push('<tr class="' + clazz + '"><td rowspan="' + span + '">' + severityLevel + '</td>');
+            htmlList.push('<td>' + data.description + '</td></tr>');
+            htmlList.push('<tr class="' + clazz + '"><td>' + data.recommendation);
+            htmlList.push('</td></tr>');
+            if (data.additional != null) {
+                htmlList.push('<tr class="' + clazz + '"><td>' + data.additional);
+                htmlList.push('</td></tr>');
+            }
+            // console.log(JSON.stringify(data, null, 2));
+            return htmlList.join('')
+        }
+
+        function feedCause(data) {
+            if (data.length > 0) {
+                var htmlList = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    htmlList.push(eachProblem(data[i]));
+                }
+
+                $('#cause-and-recommendation').html(htmlList.join(''));
+                $('#having-problem').show();
+            }
+        }
+
+        function feedData(data) {
+            var severityLevel = zoneBackendLib.severity(data.severityLevel);
+
+            if (data.severityLevel > 0) {
+                severityLevel += '&nbsp ( &nbsp;';
+                if (data.severityUrgent > 0) {
+                    severityLevel += '<font color="red">Urgent: ' + data.severityUrgent + '</font> &nbsp; ';
+                }
+                if (data.severityHigh > 0) {
+                    severityLevel += '<font color="red">High: ' + data.severityHigh + '</font> &nbsp; ';
+                }
+                if (data.severityMedium > 0) {
+                    severityLevel += '<font color="maroon">Medium: ' + data.severityMedium + '</font> &nbsp; ';
+                }
+                if (data.severityLow > 0) {
+                    severityLevel += '<font color="green">Low: ' + data.severityLow + '</font> &nbsp; ';
+                }
+                if (data.severityInfo > 0) {
+                    severityLevel += '<font color="green">Info: ' + data.severityInfo + '</font> &nbsp; ';
+                }
+                severityLevel += ")"
+            }
+            $('#severity-level').html(severityLevel);
+            $('#checking-time').html(timestampToDateString(data.updatedAt));
+            $('#soa-email').html(data.soaEmail);
+            $('#soa-serialno').html(data.soaSerialno);
+
+            var report = JSON.parse(data.jsonReport);
+
+            $('#name-servers').html(
+                show_name_servers(report.commons, 'success')
+                + show_name_servers(report.parents, 'info')
+                + show_name_servers(report.daughters, 'warning'));
+            // console.log(JSON.stringify(report, '', 2))
+            // console.log(data);
+            $('#processing').hide();
+            $('#report').show();
+        }
+
+        function queryZone(queryZone) {
+            var zone = queryZone;
+
+            function innerQueryZone() {
+                zoneBackendLib.fetch_zone(zone, function (err, result) {
+                    if (err == null) {
+                        if (result.status == 'success') {
+                            if (result.data != null && result.data.key.zoneId != null) {
+                                feedData(result.data.key);
+                                feedCause(result.data.value);                            }
+                        } else if (result.status == 'processing') {
+                            $('#processing').show();
+                            $('#report').hide();
+                            setTimeout(innerQueryZone, 5000);
+                        } else {
+                            location.href = "/query/reload/" + queryZone;
+                        }
+                    }
+                });
+            }
+
+            innerQueryZone();
+        }
+
+        queryZone(/*[[${zone}]]*/);
+
+    });
+    /*]]>*/
+</script>
+</body>
+</html>

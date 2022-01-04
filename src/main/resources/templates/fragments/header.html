@@ -1,0 +1,38 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <th:block th:fragment="header-css">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta charset="utf-8"/>
+        <title>DNS Health Analyzer</title>
+        <link rel="shortcut icon" th:href="@{/resources/favicon/favicon.ico}"/>
+        <link rel="stylesheet" th:href="@{/resources/css/bootstrap.css}" media="screen">
+        <link rel="stylesheet" th:href="@{/resources/css/custom.css}">
+        <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!--[if lt IE 9]>
+        <script th:src="@{/resources/js/html5shiv.js}"></script>
+        <script th:src="@{/resources/js/respond.min.js}"></script>
+        <![endif]-->
+        <link rel="stylesheet" th:href="@{/resources/css/app.css}">
+        <link rel="stylesheet" th:href="@{/resources/fontawesome/css/fontawesome-all.min.css}">
+        <script type="text/javascript" th:src="@{/webjars/jquery/jquery.min.js}"></script>
+        <th:block th:replace="javascript/essential"></th:block>
+        <meta name="_csrf" th:if="${_csrf}" th:content="${_csrf.token}"/>
+        <meta name="_csrf_header" th:if="${_csrf}" th:content="${_csrf.headerName}"/>
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-142772299-1"></script>
+        <script type="text/javascript">
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'UA-142772299-1');
+        </script>
+    </th:block>
+</head>
+<body>
+<div th:fragment="header" th:replace="fragments/navbar :: navbar" />
+<div th:fragment="header" th:replace="fragments/flash :: flash"/>
+<div th:fragment="header" id="instance_message"></div>
+</body>
+</html>

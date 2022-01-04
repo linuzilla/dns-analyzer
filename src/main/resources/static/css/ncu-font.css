@@ -1,0 +1,8 @@
+@font-face {
+	font-family: MyFont;
+	src: url(fonts/font.tte);
+}
+
+TD {
+	font-family: Verdana, Georgia, "MyFont", "華康細明體外字集(中央大學)";
+}

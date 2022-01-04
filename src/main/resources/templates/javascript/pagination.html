@@ -1,0 +1,60 @@
+<script type="text/javascript">
+/*<![CDATA[*/
+
+function spring_jpa_pagination(response, handler) {
+
+    function generate_href(i) {
+        return ' href="javascript:' + handler.js + '(' + i + ');" ';
+    }
+
+    function generate_page_anchor(i) {
+        return '<a id="' + handler.a + i + '"' + generate_href(i) + ' >' + (i + 1) + '</a>';
+    }
+
+    var blockSize = 10;
+    var pageNo = handler.pageNo;
+    var blockIndex = pageNo % blockSize;
+    var blockPage = Math.floor(pageNo / blockSize);
+    var from = blockPage * blockSize;
+    var to = from + blockSize;
+    var totalPages = response.totalPages;
+    var totalElements = response.totalElements;
+    var prevPageNo = pageNo > 0 ? pageNo - 1 : pageNo;
+    var nextPageNo = pageNo < totalPages - 1 ? pageNo + 1 : pageNo;
+    var fastPrevPageNo = pageNo - blockSize;
+    var fastNextPageNo = pageNo + blockSize;
+
+    fastPrevPageNo = fastPrevPageNo > 0 ? fastPrevPageNo : 0;
+    fastNextPageNo = fastNextPageNo < totalPages - 1 ? fastNextPageNo : totalPages - 1;
+
+    to = to > totalPages ? totalPages : to;
+
+    var content = response.content;
+    var totalPages = response.totalPages;
+
+    for (var i = 0; i < content.length; i++) {
+        handler.eachEntry(i, content[i]);
+    }
+    handler.done();
+
+    var pageList = new Array();
+
+    pageList.push('<li><a ' + generate_href(0) + '><i class="fas fa-fast-backward"></i></a></li>');
+    pageList.push('<li><a ' + generate_href(fastPrevPageNo) + '><i class="fas fa-step-backward"></i></a></li>');
+    pageList.push('<li><a ' + generate_href(prevPageNo) + '><i class="fas fa-backward"></i></a></li>');
+
+    for (var i = from; i < to; i++) {
+        pageList.push('<li id="' + handler.li + i + '">' + generate_page_anchor(i) + '</li>');
+    }
+
+    pageList.push('<li><a ' + generate_href(nextPageNo) + '><i class="fas fa-forward"></i></a></li>');
+    pageList.push('<li><a ' + generate_href(fastNextPageNo) + '><i class="fas fa-step-forward"></i></a></li>');
+    pageList.push('<li><a ' + generate_href(totalPages - 1) + '><i class="fas fa-fast-forward"></i></a></li>');
+
+    handler.showPagination(pageList.join(''));
+
+    $('#' + handler.li + handler.pageNo).addClass('active');
+}
+
+/*]]>*/
+</script>

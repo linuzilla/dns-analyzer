@@ -1,0 +1,24 @@
+<script type="text/javascript">
+/*<![CDATA[*/
+
+function ZoneBackendLib() {
+}
+
+ZoneBackendLib.prototype.fetch_zone = function(zone, callback) {
+    ncuCommonLib.get('zone/' + zone + "/backend", callback);
+}
+
+ZoneBackendLib.prototype.severity = function(severityLevel) {
+    var levelMap = {
+        '0': 'Normal',
+        '1': 'Info',
+        '2': 'Low',
+        '3': 'Medium',
+        '4': 'High',
+        '5': 'Urgent'
+    };
+    return levelMap[severityLevel];
+}
+
+/*]]>*/
+</script>

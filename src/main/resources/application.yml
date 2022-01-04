@@ -1,0 +1,85 @@
+application:
+  debug: false
+  access-log: false
+  scheduler: 50
+  enable-v6-name-server: true
+  dig-cache-ttl: 600
+  # queue worker: disable, *, */2, */3, */4, */5
+  queue-worker: "disable"
+  country-codes: classpath:/META-INF/country-code.yml
+  edns-compliance-test-templates: classpath:/META-INF/edns.yml
+  problem-spec-zh-tw: classpath:/META-INF/problem-spec-zh-tw.yml
+  problem-spec-en-us: classpath:/META-INF/problem-spec-en-us.yml
+  monthly-scoring: false
+  dnssec:
+    servers:
+      - 1.1.1.1
+      - 8.8.8.8
+      - 8.8.4.4
+      - 9.9.9.9
+
+server:
+  servlet:
+    context-path: /
+
+spring:
+  profiles:
+    active: dev
+  thymeleaf:
+    cache: true
+  template:
+    cache: true
+  redis:
+    database: 0
+    host: 127.0.0.1
+    port: 6379
+    timeout: 600
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.HSQLDialect
+        jdbc:
+          time_zone: UTC
+    show-sql: false
+    hibernate:
+      ddl-auto: update
+
+  datasource:
+    url: jdbc:hsqldb:file:hsqldb/digger_db;readonly=false;
+    username: sa
+    password:
+    driver-class-name: org.hsqldb.jdbc.JDBCDriver
+
+
+  security:
+    oauth2:
+      client:
+        registration:
+          portal:
+            client-id: client-id
+            client-secret: client-secret
+        provider:
+          portal:
+            issuer-uri: https://portal.ncu.edu.tw
+
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+
+#spring.webflux.static-path-pattern: "/**"
+#spring.resources.static-locations: "classpath:/public-web-resources/"
+
+google:
+  recaptcha:
+    api-script: https://www.google.com/recaptcha/api.js
+    verify-url: https://www.google.com/recaptcha/api/siteverify
+    response-parameter: g-recaptcha-response
+    key:
+      site: SITE
+      secret: SECRET
+

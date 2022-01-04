@@ -1,0 +1,44 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity5">
+<head>
+</head>
+<body>
+<div th:fragment="footer">
+    <footer id="footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-12">
+                    <ul class="list-unstyled">
+                        <li>
+                            © 2019, 2022, Computer Center of NCU (open source project).
+                        </li>
+                        <li sec:authorize="isAuthenticated()">
+                            | Logged user: <span sec:authentication="name"></span> <span sec:authorize="hasRole('DEVELOPER')">|
+                            Roles: <span sec:authentication="authorities">[ ROLE_USER ]</span></span> |
+                            <a th:href="@{/logout}">Sign Out</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script type="text/javascript" th:src="@{/resources/js/app/menu.js}"></script>
+    <script type="text/javascript">
+        $(document).ready(function() {
+            var ncuBootstrapMenu = new NcuBootstrapMenu();
+
+            ncuBootstrapMenu.load_menu("backend/menu", function(err) {
+                if (err == null) {
+                    // var checkEvent = $('#badgeCheckEvent').html().trim() == "true";
+                    // update_badge("backend/badge", "backend/im", checkEvent);
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript"
+            th:src="@{/resources/js/bootstrap.min.js}"></script>
+
+</div>
+</body>
+</html>

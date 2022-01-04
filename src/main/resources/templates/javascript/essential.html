@@ -1,0 +1,96 @@
+<script xmlns:th="http://www.thymeleaf.org" th:inline="javascript" type="text/javascript">
+/*<![CDATA[*/
+
+var contextPath = /*[[@{/}]]*/;
+
+//function get_context_path() {
+//    return /*[[@{/}]]*/;
+//}
+
+/*
+function get_csrf_header() {
+    var csrfName = $('meta[name="_csrf_header"]').attr('content');
+    var csrfContent = $('meta[name="_csrf"]').attr('content');
+    var header = {};
+    header[csrfName] = csrfContent;
+    return header;
+}
+*/
+
+function NCUCC_CommonLib(contextPath) {
+    this.context_path = contextPath;
+}
+
+NCUCC_CommonLib.prototype.csrf_header = function() {
+    var csrfName = $('meta[name="_csrf_header"]').attr('content');
+    var csrfContent = $('meta[name="_csrf"]').attr('content');
+    var header = {};
+    header[csrfName] = csrfContent;
+    return header;
+}
+
+NCUCC_CommonLib.prototype.get = function(relativePath, data, callback) {
+     this.doMethod(relativePath, 'GET', data, callback);
+}
+
+NCUCC_CommonLib.prototype.put = function(relativePath, data, callback) {
+     this.doMethod(relativePath, 'PUT', data, callback);
+}
+
+NCUCC_CommonLib.prototype.post = function(relativePath, data, callback) {
+     this.doMethod(relativePath, 'POST', data, callback);
+}
+
+NCUCC_CommonLib.prototype.patch = function(relativePath, data, callback) {
+     this.doMethod(relativePath, 'PATCH', data, callback);
+}
+
+NCUCC_CommonLib.prototype.delete = function(relativePath, data, callback) {
+     this.doMethod(relativePath, 'DELETE', data, callback);
+}
+
+NCUCC_CommonLib.prototype.doMethod = function(relativePath, method, data, callback) {
+    if (typeof(data) === 'function') {
+        callback = data;
+        data = null;
+    }
+
+    var options = {
+        url: contextPath + relativePath,
+        dataType: 'json',
+        method: method,
+        timeout: 5000,
+        success: function (response) {
+            callback(null, response);
+        },
+        error: function(XMLHttpRequest, textStatus, errorThrown) {
+            callback('error');
+        },
+        statusCode: {
+            403: function() {
+                callback(403);
+            },
+            404: function() {
+                callback(404);
+            }
+        }
+    }
+
+    if (typeof(data) !== 'function') {
+        options['data'] = data;
+    }
+
+    if (method != 'GET') {
+        options['headers'] = this.csrf_header();
+
+        if (data != null) {
+            options['contentType'] = "application/json; charset=utf-8";
+        }
+    }
+
+    $.ajax(options);
+}
+
+var ncuCommonLib = new NCUCC_CommonLib(/*[[@{/}]]*/);
+/*]]>*/
+</script>

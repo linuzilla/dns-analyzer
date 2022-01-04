@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+    <div th:replace="javascript/statistics_backend"></div>
+    <style>
+        .percentage-data {
+            text-align: center;
+        }
+
+        .country-name {
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well bs-component">
+                <form class="form-horizontal">
+                    <fieldset>
+                        <legend id="legend">Ranking</legend>
+                        <p>Only count universities in a country and ignore those countries have fewer than 10 universities.
+                        </p>
+                        <div class="form-group">
+                            <label for="select" class="control-label">Ranking Time
+                                <select id="select">
+                                    <option th:each="event : ${events}"
+                                            th:value="${event.id}"
+                                            th:utext="${event.name}"/>
+                                </select> Order by: <span id="order-by"></span>
+                            </label>
+                        </div>
+                    </fieldset>
+                </form>
+                <table class="table table-striped table-hover ">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Country Name</th>
+                        <th><a href="javascript:order_by('rank')">Score</a></th>
+                        <th>Zones</th>
+                        <th><a href="javascript:order_by('dnssec')">DNSSEC</a></th>
+                        <th><a href="javascript:order_by('ipv6')">IPv6</a></th>
+                        <th><a href="javascript:order_by('severity')">Normal</a></th>
+                        <th>Info</th>
+                        <th>Low</th>
+                        <th>Media</th>
+                        <th>High</th>
+                        <th>Urgent</th>
+                        <th><a href="javascript:order_by('edns')">EDNS</a></th>
+                        <th><a href="javascript:order_by('axfr')">AXFR</a></th>
+                        <th><a href="javascript:order_by('recursion')">Recursion</a></th>
+                    </tr>
+                    </thead>
+                    <tbody id="ranking">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+<script th:inline="javascript"  type="text/javascript">
+    var statisticBackendLib = new StatisticsBackendLib();
+    var rank_type = /*[[${order}]]*/;
+    var currentTag = /*[[${target.tag}]]*/;
+    var currentName = /*[[${target.name}]]*/;
+    var currentId = /*[[${target.id}]]*/;
+
+    var events = /*[[${events}]]*/;
+    var eventsMap = events.reduce(function(map, obj) { map[obj.id] = obj; return map;}, {});
+
+    var rank_name = {
+        'rank': 'Score',
+        'dnssec': 'DNSSEC enabled ratio',
+        'ipv6': 'IPv6 available ratio',
+        'severity': 'Severity',
+        'edns': 'EDNS Compliant ratio',
+        'axfr': 'Zone Transfer enabled ratio',
+        'recursion': 'RECURSION enabled ratio'
+    }
+
+
+
+    function percentage(data) {
+        return data / 100 + "%";
+    }
+
+    function order_by(rtype) {
+        rank_type = rtype;
+        update_ranking($('#select').val(), rank_type);
+    }
+
+    function update_ranking(id, rank_type) {
+        var entry = eventsMap[id];
+
+        if (entry != null) {
+            currentName = entry.name;
+            currentId = entry.id;
+            currentTag = entry.tag;
+        }
+
+        $('#legend').html(currentName);
+        document.title = currentName;
+        window.history.pushState(null,"", contextPath + 'statistics/ranking/' + currentTag + '/' + rank_type);
+        $('#order-by').html(rank_name[rank_type]);
+
+        statisticBackendLib.ranking(id, rank_type, function (err, data) {
+            if (err == null) {
+                // console.log(JSON.stringify(data, null, 2));
+                var list = [];
+
+                for (var i = 0; i < data.length; i++) {
+                    list.push('<tr class="percentage-data"><td>');
+                    if (rank_type == 'rank') {
+                        list.push(data[i].rank);
+                    } else {
+                        list.push(i + 1);
+                    }
+                    list.push('</td><td class="country-name">');
+                    list.push('<a href="' + contextPath + 'univ/browse/' + data[i].countryCode +  '">');
+                    list.push(data[i].countryName);
+                    list.push("</a> <sup>" + data[i].countryCode + "</sup>");
+                    list.push('</td><td>');
+                    list.push(data[i].score);
+                    list.push('</td><td>');
+                    list.push(data[i].zones);
+                    list.push('</td><td style="">');
+                    list.push(percentage(data[i].dnssec));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].ipv6));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].normal));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].info));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].low));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].medium));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].high));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].urgent));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].edns));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].axfr));
+                    list.push('</td><td>');
+                    list.push(percentage(data[i].recursion));
+                    list.push('</td><tr>');
+                }
+
+                $('#ranking').html(list.join(''));
+            }
+        })
+    }
+    $(document).ready(function() {
+
+        // console.log(JSON.stringify(/*[[${target}]]*/));
+
+        $('#select').change(function () {
+            update_ranking($('#select').val(), rank_type);
+        });
+        update_ranking(currentId, rank_type)
+    });
+</script>
+</body>
+</html>

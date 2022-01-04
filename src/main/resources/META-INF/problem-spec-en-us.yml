@@ -1,0 +1,119 @@
+#
+#   severity: { normal, info, low, medium, high, urgent }
+#
+---
+name: Problems and recommendation
+problems:
+  PARENT_ZONE_NOT_EXISTS:
+    severity: urgent
+    problem: Zone "{zone}" did not exists!
+    recommendation: Could not find zone from parent name servers.
+
+  ZONE_NOT_EXISTS:
+    severity: urgent
+    problem: Zone "{zone}" did not exists!
+    recommendation: Could not find zone from parent name servers.
+
+  CHILDREN_DEFINED_NO_NS_RRSET:
+    severity: high
+    problem: Child DNS server should define themselves as name server for zone "{zone}"
+    recommendation: Define the NS records on children side.
+
+  CHILDREN_RR_RECORD_DISAGREEMENTS:
+    severity: high
+    problem: In zone "{zone}", child DNS servers NS RRset disagreement.
+    recommendation: All child DNS servers should have same RRset.
+
+  CHILD_HAS_MORE_RR_THAN_PARENT:
+    severity: info
+    problem: In zone "{zone}", child DNS servers defined more NS servers than parent did.
+    recommendation: Define the same set of name server if possible.
+
+  PARENT_HAS_MORE_RR_THAN_CHILD:
+    severity: low
+    problem: In zone "{zone}", parent DNS servers defined more NS servers than children did.
+    recommendation: Define the same set of name server if possible.
+
+  NAME_SERVER_NOT_RESPONDING:
+    severity: high
+    problem: Name server "{domain} ({addr})" did not response DNS query, with error "{error}"
+    recommendation: Fix the problems of the name server, or remove it.
+
+  NAME_SERVER_NOT_WORKING_PROPERLY:
+    severity: high
+    problem: Name server "{domain} ({addr})" response "{error}" while querying for SOA record.
+    recommendation: A name server should response SOA query properly.
+
+  NAME_SERVER_ADDRESS_NOT_FOUND:
+    severity: high
+    problem: Name server "{domain}" could not be resolved, with error "{error}".
+    recommendation: Wrong settings.
+
+  NO_WORKING_NAME_SERVER:
+    severity: urgent
+    problem: In zone "{zone}", all the name servers did not responded.
+    recommendation: Fix the problem as soon as possible.
+
+  NO_WORKING_IPV4_NAME_SERVER:
+    severity: urgent
+    problem: In zone "{zone}", lack of a name server which can response IPv4 DNS query.
+    recommendation: Fix the problem as soon as possible.
+
+  NO_WORKING_IPV6_NAME_SERVER:
+    severity: low
+    problem: In zone "{zone}", lack of a name server which can response IPv6 DNS query.
+    recommendation: Setup one or more IPv6 DNS server if possible.
+
+  ONLY_ONE_NAME_SERVER_IN_CONFIGURATION:
+    severity: medium
+    problem: In zone "{zone}", only one name server exists, which is "{domain} ({addr})"
+    recommendation: Two or more name servers are recommended.
+
+  ONLY_ONE_NAME_SERVER_IN_PARENT:
+    severity: medium
+    problem: In zone "{zone}", parent NS define only one name server, which is "{domain} ({addr})"
+    recommendation: Two or more name servers are recommended.
+
+  SOA_DIFFERENT_BETWEEN_SERVERS:
+    severity: low
+    problem: In zone "{zone}", SOA records are different between servers.
+    recommendation: Inconsistency SOA records between servers might caused by out of sync between master server and slave server.
+
+  ALLOW_OPEN_RECURSIVE:
+    severity: high
+    problem: In zone "{zone}", name server "{domain} ({addr})" allowed recursive query, which might not necessary.
+    recommendation: Do not allow open recursive query on authority servers.
+
+  ALLOW_OPEN_ZONE_TRANSFER:
+    severity: high
+    problem: In zone "{zone}", name server "{domain} ({addr})" allowed zone transfer from public internet.
+    recommendation: Zone transfer should be allowed only to the slaves.
+
+  EDNS_COMPLIANCE_ERROR:
+    severity: medium
+    problem: In "{zone}", name server "{domain} ({addr})" did not fully compliant with EDNS standard.
+    recommendation: https://ednscomp.isc.org/ednscomp
+
+  EDNS_COMPLIANCE_WARNING:
+    severity: low
+    problem: In "{zone}", name server "{domain} ({addr})" did not compliant with EDNS standard.
+    recommendation: https://ednscomp.isc.org/ednscomp
+
+  DNS_COOKIE_NOT_SUPPORT:
+    severity: info
+    problem: In "{zone}", name server "{domain} ({addr})" did not support DNS Cookie
+    recommendation: DNS Cookie is a lighweight DNS transaction security mechanism that protects DNS sesrvers and DNS
+      clients from a variety of attacks like Dos attacks, DNS Amplification attacks, DNS Cache Poisoning etc.
+      It is a lightweight mechanism and can work with other existing DNS transaction security mechanisms.
+      It can even work in the presence of NAT and NAT - Protocol Transaction (NAT-PT).
+
+  DNS_SUBNET_NOT_SUPPORT:
+    severity: info
+    problem: In "{zone}", name server "{domain} ({addr})" did not support DNS Subnet
+    recommendation: DNS Subnet is a new standard.
+
+  DNSSEC_NOT_ENABLE:
+    severity: info
+    problem: In "{zone}", DNSSEC did not enabled or could not be verfied.
+    recommendation: DNS Security Extensions (DNSSEC) provide a way to be sure that you are communicating
+      with the correct website or other services.

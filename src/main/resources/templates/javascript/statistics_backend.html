@@ -1,0 +1,48 @@
+<script type="text/javascript">
+/*<![CDATA[*/
+
+function StatisticsBackendLib() {
+}
+
+StatisticsBackendLib.prototype.find_severity = function(callback) {
+    ncuCommonLib.get('statistics/backend/severity', callback);
+};
+
+StatisticsBackendLib.prototype.find_ipv6 = function(callback) {
+    ncuCommonLib.get('statistics/backend/ipv6', callback);
+};
+
+StatisticsBackendLib.prototype.find_dnssec = function(callback) {
+    ncuCommonLib.get('statistics/backend/dnssec', callback);
+};
+
+StatisticsBackendLib.prototype.find_edns = function(callback) {
+    ncuCommonLib.get('statistics/backend/edns', callback);
+};
+
+StatisticsBackendLib.prototype.find_rrset = function(callback) {
+    ncuCommonLib.get('statistics/backend/rrset', callback);
+};
+
+StatisticsBackendLib.prototype.find_problems = function(callback) {
+    ncuCommonLib.get('statistics/backend/problems', callback);
+};
+
+StatisticsBackendLib.prototype.find_servers = function(callback) {
+    ncuCommonLib.get('statistics/backend/servers', callback);
+};
+
+StatisticsBackendLib.prototype.find_axfr = function(callback) {
+    ncuCommonLib.get('statistics/backend/axfr', callback);
+};
+
+StatisticsBackendLib.prototype.find_recursive = function(callback) {
+    ncuCommonLib.get('statistics/backend/recursive', callback);
+};
+
+StatisticsBackendLib.prototype.ranking = function(id, rank_type, callback) {
+    ncuCommonLib.get('statistics/backend/ranking/' + id + '/' + rank_type, callback);
+};
+
+/*]]>*/
+</script>

@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    /*<![CDATA[*/
+
+    function StatisticsUnivBackendLib(country) {
+        this.prefix = 'statistics/univ/backend/';
+        this.tailer = country == null ? '' : '/' + country;
+    }
+
+    StatisticsUnivBackendLib.prototype.gen = function(path) {
+        return this.prefix + path + this.tailer;
+    };
+
+    StatisticsUnivBackendLib.prototype.find_severity = function(callback) {
+        ncuCommonLib.get(this.gen('severity'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_ipv6 = function(callback) {
+        ncuCommonLib.get(this.gen('ipv6'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_dnssec = function(callback) {
+        ncuCommonLib.get(this.gen('dnssec'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_edns = function(callback) {
+        ncuCommonLib.get(this.gen('edns'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_rrset = function(callback) {
+        ncuCommonLib.get(this.gen('rrset'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_problems = function(callback) {
+        ncuCommonLib.get(this.gen('problems'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_servers = function(callback) {
+        ncuCommonLib.get(this.gen('servers'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_axfr = function(callback) {
+        ncuCommonLib.get(this.gen('axfr'), callback);
+    };
+
+    StatisticsUnivBackendLib.prototype.find_recursive = function(callback) {
+        ncuCommonLib.get(this.gen('recursive'), callback);
+    };
+
+    /*]]>*/
+</script>

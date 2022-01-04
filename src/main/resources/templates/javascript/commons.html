@@ -1,0 +1,25 @@
+<script>
+
+function severityLevel(data) {
+    if (data.severityLevel > 0) {
+        var severityLevel += '&nbsp ( &nbsp;';
+        if (data.severityUrgent > 0) {
+            severityLevel += '<font color="red">Urgent: ' + data.severityUrgent + '</font> &nbsp; ';
+        }
+        if (data.severityHigh > 0) {
+            severityLevel += '<font color="red">High: ' + data.severityHigh + '</font> &nbsp; ';
+        }
+        if (data.severityMedium > 0) {
+            severityLevel += '<font color="maroon">Medium: ' + data.severityMedium + '</font> &nbsp; ';
+        }
+        if (data.severityLow > 0) {
+            severityLevel += '<font color="green">Low: ' + data.severityLow + '</font> &nbsp; ';
+        }
+        if (data.severityInfo > 0) {
+            severityLevel += '<font color="green">Info: ' + data.severityInfo + '</font> &nbsp; ';
+        }
+        severityLevel += ")"
+        return severityLevel;
+    }
+}
+</script>

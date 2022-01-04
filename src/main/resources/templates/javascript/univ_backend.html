@@ -1,0 +1,17 @@
+<script type="text/javascript">
+    /*<![CDATA[*/
+
+    function NcuUnivBackend(country) {
+        this.prefix = 'univ/backend/';
+        this.tailer = country == null ? '' : country + '/';
+    }
+
+    NcuUnivBackend.prototype.gen = function(path) {
+        return this.prefix + path + this.tailer;
+    };
+
+    NcuUnivBackend.prototype.browse = function(pageNo, callback) {
+        ncuCommonLib.get(this.gen('browse/') + pageNo, callback);
+    }
+    /*]]>*/
+</script>

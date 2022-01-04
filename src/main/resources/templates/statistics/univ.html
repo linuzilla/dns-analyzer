@@ -1,0 +1,97 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+    <link rel="stylesheet" th:href="@{/webjars/jquery-ui/jquery-ui.min.css}">
+    <link rel="stylesheet" th:href="@{/resources/css/autocomplete.css}">
+    <script type="text/javascript" th:src="@{/webjars/jquery-ui/jquery-ui.min.js}"></script>
+    <script type="text/javascript" th:src="@{/resources/js/jquery.ui.autocomplete.html.js}"></script>
+    <div th:replace="javascript/stat_univ_backend"></div>
+    <div th:replace="statistics/commons :: statistics-css"></div>
+    <div th:replace="javascript/statistics-dashboard"></div>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well bs-component">
+                <th:block th:switch="${country == null}">
+                    <th:block th:case="true">
+                        <form id="search-form" class="form-horizontal">
+                            <fieldset>
+                                <div class="form-group">
+                                    <div class="col-lg-10 ui-widget">
+                                        <input type="text" class="form-control" id="find-country" placeholder="Country">
+                                        <div id="country-suggestion" class="ui-autocomplete"></div>
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </form>
+                        <h1><a id="country" th:href="@{/univ/browse}">World Universities</a></h1>
+                    </th:block>
+                    <th:block th:case="*">
+                        <h1><th:block th:text="${country}"></th:block> ( .<a th:href="@{/univ/browse/{country}(country=${code})}"><th:block th:text="${code}"></th:block></a>)</h1>
+                    </th:block>
+                </th:block>
+                <hr />
+                <div th:replace="statistics/commons :: statistics-body"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+<script th:inline="javascript" type="text/javascript">
+
+    function switch_to_country(code) {
+        render_statistic(new StatisticsUnivBackendLib(code));
+    }
+
+    $(document).ready(function() {
+        switch_to_country(/*[[${code}]]*/);
+
+        var relativePath = 'backend/country';
+
+        var backendUrl = ncuCommonLib.context_path + relativePath;
+
+        function showPage(item) {
+            $('#find-country').val(item.id);
+            //$('#search-form').submit();
+            switch_to_country(item.id);
+            $('#country').html(item.value).attr('href', contextPath + 'univ/browse/' + item.id);
+        }
+
+        $("#find-country").autocomplete({
+            source: backendUrl,
+            minLength: 1,
+            select: function(event, ui) {
+                showPage(ui.item);
+            },
+            html: true,
+            open: function(event, ui) {
+                $(".ui-autocomplete").css("z-index", 1000);
+            }
+        });
+
+        $('#search-form').keypress(function (e) {
+            if (e.which == 13) {
+                ncuCommonLib.get(relativePath + "?term=" + $('#find-country').val(), function (err, result) {
+                   if (err == null && result.length > 0) {
+                       showPage(result[0]);
+                   }
+                });
+
+                return false;
+            }
+        });
+    });
+</script>
+</body>
+</html>

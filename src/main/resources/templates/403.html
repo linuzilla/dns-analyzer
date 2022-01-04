@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron">
+                <p th:text="${error}"></p>
+                <table sec:authorize="hasRole('DEVELOPER')" class="table">
+                    <tr th:each="var : ${#vars.getVariableNames()}">
+                        <td th:text="${var}"></td>
+                        <td th:text="${#vars.getVariable(var)}"></td>
+                    </tr>
+                    <!-- Adding these manually because they're considered special.
+                         see https://github.com/thymeleaf/thymeleaf/blob/thymeleaf-3.0.3.RELEASE/src/main/java/org/thymeleaf/context/WebEngineContext.java#L199
+                    -->
+                    <tr>
+                        <td>param</td>
+                        <td th:text="${#vars.getVariable('param')}"></td>
+                    </tr>
+                    <tr>
+                        <td>session</td>
+                        <td th:text="${#vars.getVariable('session')}"></td>
+                    </tr>
+                    <tr>
+                        <td>application</td>
+                        <td th:text="${#vars.getVariable('application')}"></td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

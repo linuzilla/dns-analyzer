@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+    <div th:replace="javascript/statistics_backend"></div>
+    <div th:replace="statistics/commons :: statistics-css"></div>
+    <div th:replace="javascript/statistics-dashboard"></div>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well bs-component">
+                <div th:replace="statistics/commons :: statistics-body"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        render_statistic(new StatisticsBackendLib())
+    });
+</script>
+</body>
+</html>

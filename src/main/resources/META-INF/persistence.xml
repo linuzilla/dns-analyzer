@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+
+    <persistence-unit name="NewPersistenceUnit">
+        <class>ncu.cc.digger.entities.ReportHistoryEntity</class>
+        <class>ncu.cc.digger.entities.ReportEntity</class>
+        <class>ncu.cc.digger.entities.SceneUserEntity</class>
+        <class>ncu.cc.digger.entities.SceneZoneEntity</class>
+        <class>ncu.cc.digger.entities.SceneEntity</class>
+        <class>ncu.cc.digger.entities.UserEntity</class>
+        <class>ncu.cc.digger.entities.ZoneUserEntity</class>
+        <class>ncu.cc.digger.entities.ZonesEntity</class>
+        <class>ncu.cc.digger.entities.SystemUserEntity</class>
+        <class>ncu.cc.digger.entities.SceneReportViewEntity</class>
+        <class>ncu.cc.digger.entities.SceneUserViewEntity</class>
+        <class>ncu.cc.digger.entities.QueryQueueEntity</class>
+        <class>ncu.cc.digger.entities.UniversitiesEntity</class>
+        <class>ncu.cc.digger.entities.UnivReportViewEntity</class>
+        <class>ncu.cc.digger.entities.CountryRankingEntity</class>
+        <class>ncu.cc.digger.entities.RankingEventEntity</class>
+        <properties>
+            <property name="toplink.jdbc.url" value="jdbc:mariadb://localhost:3306/digger_db"/>
+            <property name="toplink.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+            <property name="hibernate.connection.url" value="jdbc:mariadb://localhost:3306/digger_db"/>
+            <property name="hibernate.connection.driver_class" value="org.mariadb.jdbc.Driver"/>
+            <property name="openjpa.ConnectionURL" value="jdbc:mariadb://localhost:3306/digger_db"/>
+            <property name="openjpa.ConnectionDriverName" value="org.mariadb.jdbc.Driver"/>
+            <property name="eclipselink.jdbc.url" value="jdbc:mariadb://localhost:3306/digger_db"/>
+            <property name="eclipselink.jdbc.driver" value="org.mariadb.jdbc.Driver"/>
+        </properties>
+    </persistence-unit>
+</persistence>

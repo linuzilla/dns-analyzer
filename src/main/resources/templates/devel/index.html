@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="jumbotron">
+                <h3 class="display-4">網頁閘道系統</h3>
+                <p class="lead">網頁閘道系統是一個網站代登入系統，主要的目的是讓多人享用單一後端帳號，但所有登入者不需要擁有後端登入的密碼。</p>
+                <hr class="my-4">
+                <p>本系統是由 國立中央大學 電算中心 技術研發組 於 2017 年 12 月所開發。</p>
+                <p class="lead">
+                    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

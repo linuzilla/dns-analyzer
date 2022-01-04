@@ -1,0 +1,103 @@
+<ul id="management-pagination" class="pagination"></ul>
+<div class="well bs-component">
+    <table class="table table-striped table-hover ">
+        <thead>
+        <tr>
+            <th>Zone</th>
+
+            <th>Name</th>
+            <th style="text-align:center">Severity</th>
+            <th style="text-align:center">Urgent</th>
+            <th style="text-align:center">High</th>
+            <th style="text-align:center">Medium</th>
+            <th style="text-align:center">EDNS</th>
+            <th style="text-align:center">AXFR</th>
+            <th style="text-align:center">R</th>
+            <th style="text-align:center">V6</th>
+            <th>Time</th>
+        </tr>
+        </thead>
+        <tbody id="management-tbody">
+        </tbody>
+    </table>
+</div>
+
+<script type="text/javascript">
+    /*<![CDATA[*/
+    // var viewBackend = new NcuViewBackend();
+    var zoneBackendLib = new ZoneBackendLib();
+
+    var clazzmap = {
+        0: 'text-success',
+        1: 'text-success',
+        2: 'text-info',
+        3: 'text-warning',
+        4: 'text-danger',
+        5: 'text-danger',
+        6: 'text-danger'
+    };
+
+    function show_view_browse_page(pageNo) {
+        viewBackend.browse(pageNo, function(err, response) {
+            if (err == null) {
+                var list = [];
+
+                spring_jpa_pagination(response, {
+                    pageNo: pageNo,
+                    li: 'da-page-li-',
+                    a: 'da-page-',
+                    js: 'show_view_browse_page',
+                    eachEntry: function(i, data) {
+                        // console.log(JSON.stringify(data, null, 2));
+                        if (data != null) {
+                            clazz = clazzmap[data.severityLevel];
+                            list.push("<tr><td>");
+                            list.push(data.zoneName);
+                            list.push("</td><td>");
+                            list.push('<a href="/zone/' + data.zoneId + '">');
+                            list.push(data.zoneId);
+                            list.push('</a>');
+                            if (data.updatedAt == null) {
+                                list.push('</td><td colspan="9">')
+                            } else {
+                                list.push("</td><td style='text-align:center'><b class='" + clazz + "'>");
+                                list.push(zoneBackendLib.severity(data.severityLevel));
+                                list.push("</b></td><td style='text-align:center'><b class='text-danger'>");
+                                list.push(data.severityUrgent == 0 ? '' : data.severityUrgent);
+                                list.push("</b></td><td style='text-align:center'><b class='text-danger'>");
+                                list.push(data.severityHigh == 0 ? '' : data.severityHigh);
+                                list.push("</b></td><td style='text-align:center'><b class='text-warning'>");
+                                list.push(data.severityMedium == 0 ? '' : data.severityMedium);
+                                list.push("</b></td><td style='text-align:center'><b class='text-warning'>");
+                                list.push(data.nonCompliantEdns == 0 ? '' : '<i class="fas fa-times"></i>');
+                                list.push("</b></td><td style='text-align:center'><b class='text-danger'>");
+                                list.push(data.openAxfr == 0 ? '' : '<i class="fas fa-times"></i>');
+                                list.push("</b></td><td style='text-align:center'><b class='text-danger'>");
+                                list.push(data.openRecursive == 0 ? '' : '<i class="fas fa-times"></i>');
+                                list.push("</b></td><td style='text-align:center'><b class='text-success'>");
+                                list.push(data.ipv6Available == 0 ? '' : '<i class="fas fa-check"></i>');
+                                list.push("</b></td><td>");
+                                list.push(timestampToDateString(data.updatedAt));
+                            }
+                            list.push("</td></tr>");
+                        } else {
+                            list.push('<tr><td colspan="2">&lt;&lt; Oops on page ' + pageNo + '! &gt;&gt;</td></tr>');
+                        }
+                    },
+                    done: function() {
+                        $('#management-tbody').html(list.join(''));
+                    },
+                    showPagination: function(data) {
+                        $('#management-pagination').html(data);
+                    }
+                });
+            }
+        });
+    }
+
+    $(document).ready(function() {
+        show_view_browse_page(0);
+    });
+
+    /*]]>*/
+</script>

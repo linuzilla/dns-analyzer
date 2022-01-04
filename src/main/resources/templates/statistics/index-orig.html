@@ -1,0 +1,296 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+    <div th:replace="javascript/statistics_backend"></div>
+    <style>
+        #severity-dashboard {
+            font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+            width: 960px;
+            height: 500px;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        path.slice{
+            stroke-width:2px;
+        }
+
+        polyline{
+            opacity: .3;
+            stroke: black;
+            stroke-width: 2px;
+            fill: none;
+        }
+    </style>
+    <script th:src="@{/webjars/d3js/3.5.17/d3.min.js}"></script>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="well bs-component">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+                        <table class="table table-striped table-hover ">
+                            <tbody id="statistics">
+                            <tr><th>IPv6 enabled</th><th id="ipv6Available"></th></tr>
+                            <tr><th>EDNS NOT compliant</th><th id="nonCompliantEdns"></th></tr>
+                            <tr><th>RR Set Inconsistency</th><th id="rrsetInconsistency"></th></tr>
+                            <tr><th>Allow AXFR</th><th id="openAxfr"></th></tr>
+                            <tr><th>Allow Recursive</th><th id="openRecursive"></th></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="col-lg-4 col-md-6 col-sm-8 col-xs-12">
+                        <table class="table table-striped table-hover ">
+                            <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>%</th>
+                            </tr>
+                            </thead>
+                            <tbody id="severity-percent">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div id='severity-dashboard'></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+<script type="text/javascript">
+
+    function dashboard(target, severity_data) {
+        var svg = d3.select(target)
+            .append("svg")
+            .append("g")
+
+        svg.append("g")
+            .attr("class", "slices");
+        svg.append("g")
+            .attr("class", "labels");
+        svg.append("g")
+            .attr("class", "lines");
+
+        var width = 960,
+            height = 450,
+            radius = Math.min(width, height) / 2;
+
+        var pie = d3.layout.pie()
+            .sort(null)
+            .value(function(d) {
+                return d.value;
+            });
+
+        var arc = d3.svg.arc()
+            .outerRadius(radius * 0.8)
+            .innerRadius(radius * 0.4);
+
+        var outerArc = d3.svg.arc()
+            .innerRadius(radius * 0.9)
+            .outerRadius(radius * 0.9);
+
+        svg.attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        var key = function(d){ return d.data.label; };
+
+        var color = d3.scale.ordinal()
+            .domain(["Normal", "Info", "Low", "Medium", "High", "Urgent"])
+            .range([
+                "#20962e",
+                "#659624",
+                "#3366cc",
+                "#ffde1e",
+                "#dc7319",
+                "#dc3912"]);
+
+        change(severity_data);
+
+        function change(data) {
+
+            /* ------- PIE SLICES -------*/
+            var slice = svg.select(".slices").selectAll("path.slice")
+                .data(pie(data), key);
+
+            slice.enter()
+                .insert("path")
+                .style("fill", function(d) { return color(d.data.label); })
+                .attr("class", "slice");
+
+            slice
+                .transition().duration(1000)
+                .attrTween("d", function(d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function(t) {
+                        return arc(interpolate(t));
+                    };
+                })
+
+            slice.exit()
+                .remove();
+
+            /* ------- TEXT LABELS -------*/
+
+            var text = svg.select(".labels").selectAll("text")
+                .data(pie(data), key);
+
+            text.enter()
+                .append("text")
+                .attr("dy", ".35em")
+                .text(function(d) {
+                    return d.data.label;
+                });
+
+            function midAngle(d){
+                return d.startAngle + (d.endAngle - d.startAngle)/2;
+            }
+
+            text.transition().duration(1000)
+                .attrTween("transform", function(d) {
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function(t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return "translate("+ pos +")";
+                    };
+                })
+                .styleTween("text-anchor", function(d){
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function(t) {
+                        var d2 = interpolate(t);
+                        return midAngle(d2) < Math.PI ? "start":"end";
+                    };
+                });
+
+            text.exit()
+                .remove();
+
+            /* ------- SLICE TO TEXT POLYLINES -------*/
+
+            var polyline = svg.select(".lines").selectAll("polyline")
+                .data(pie(data), key);
+
+            polyline.enter()
+                .append("polyline");
+
+            polyline.transition().duration(1000)
+                .attrTween("points", function(d){
+                    this._current = this._current || d;
+                    var interpolate = d3.interpolate(this._current, d);
+                    this._current = interpolate(0);
+                    return function(t) {
+                        var d2 = interpolate(t);
+                        var pos = outerArc.centroid(d2);
+                        pos[0] = radius * 0.95 * (midAngle(d2) < Math.PI ? 1 : -1);
+                        return [arc.centroid(d2), outerArc.centroid(d2), pos];
+                    };
+                });
+
+            polyline.exit()
+                .remove();
+        };
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        var statisticsLib = new StatisticsBackendLib();
+
+        var severityMap = {
+            0: 'Normal',
+            1: 'Info',
+            2: 'Low',
+            3: 'Medium',
+            4: 'High',
+            5: 'Urgent'
+        };
+
+        statisticsLib.find_severity(function (err, data) {
+            if (err == null) {
+                var list = [];
+
+                var total = 0.0;
+                data.map(function (entry) {total += entry.cnt;});
+
+                Object.keys(severityMap).forEach(function(key) {
+                    list.push('<tr><td>');
+                    list.push(severityMap[key]);
+                    list.push('</td><td>');
+                    list.push(Math.round(data[key].cnt * 10000.0 / total) / 100.0);
+                    list.push('%</td></tr>');
+                });
+                $('#severity-percent').html(list.join(''));
+
+                dashboard('#severity-dashboard', data.map(function (entry) {
+                    return {
+                        label: severityMap[entry.severityLevel],
+                        value: entry.cnt
+                    };
+                }));
+            }
+        });
+
+        function show_percentage(data, target) {
+            var total = 0;
+            var base = 0;
+
+            data.map(function (entry) {
+                total += entry.cnt;
+                if (entry[target] >= 1) {
+                    base += entry.cnt;
+                }
+            });
+
+            var v = Math.round(base * 10000 / total) / 100;
+            $('#' + target).html(v + "%");
+        }
+
+        statisticsLib.find_axfr(function (err, data) {
+            show_percentage(data, 'openAxfr');
+        });
+
+        statisticsLib.find_recursive(function (err, data) {
+            show_percentage(data, 'openRecursive');
+        });
+
+        statisticsLib.find_ipv6(function (err, data) {
+            show_percentage(data, 'ipv6Available');
+        });
+
+        statisticsLib.find_edns(function (err, data) {
+            show_percentage(data, 'nonCompliantEdns');
+        });
+
+        statisticsLib.find_rrset(function (err, data) {
+            show_percentage(data, 'rrsetInconsistency');
+        });
+
+    });
+</script>
+</body>
+</html>

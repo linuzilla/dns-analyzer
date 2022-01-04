@@ -1,0 +1,30 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <div th:replace="fragments/header :: header-css"/>
+    <script type="text/javascript" th:src="@{/resources/js/app/utils.js}"></script>
+    <div th:replace="javascript/zone_backend"></div>
+    <div th:replace="javascript/view_backend"></div>
+    <div th:replace="javascript/pagination"></div>
+    <script type="text/javascript">
+        var viewBackend = new NcuViewBackend();
+    </script>
+</head>
+<body>
+
+<div th:replace="fragments/header :: header"/>
+
+<div class="container">
+    <div class="row">
+        <div class="col-lg-12">
+            <div th:replace="view/browse_backend"></div>
+        </div>
+    </div>
+</div>
+
+<!-- /.container -->
+
+<div th:replace="fragments/footer :: footer"/>
+
+</body>
+</html>

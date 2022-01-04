@@ -1,0 +1,13 @@
+<script type="text/javascript">
+    /*<![CDATA[*/
+
+    function NcuReportsBackend() {
+    }
+
+    NcuReportsBackend.prototype.find_report = function(pageNo, callback) {
+        ncuCommonLib.get('report/' + pageNo, callback);
+    }
+
+
+    /*]]>*/
+</script>
